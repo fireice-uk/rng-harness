@@ -4,26 +4,33 @@
 
 
 
-int main(int argc, char **argv) {
-    uint8_t sample[8];
-    int n = 1;
+int main(int argc, char **argv) 
+{
+    uint8_t sample[64];
     prng &obj = prng::inst();
-    obj.generate_system_random_bytes(&sample[0], n);
-    
-    obj.generate_system_random_bytes(&sample[1], n);
-    obj.generate_system_random_bytes(&sample[2], n);
-    obj.generate_system_random_bytes(&sample[3], n);
-    obj.generate_system_random_bytes(&sample[4], n);
-    obj.generate_system_random_bytes(&sample[5], n);
-    obj.generate_system_random_bytes(&sample[6], n);
-    obj.generate_system_random_bytes(&sample[7], n);
+    for(int i = 0; i < 64; i++)
+    {
+      obj.generate_system_random_bytes(&sample[i], 1);
+    }
+        
+    for(int i = 0; i < 32; i++)
+      std::cout << std::hex << static_cast<int>(sample[i]);
+    std::cout << std::endl;
 
-    std::cout << std::hex << static_cast<int>(sample[0]) << static_cast<int>(sample[1]) << static_cast<int>(sample[2]) << static_cast<int>(sample[3]) << std::endl;
-    std::cout << std::hex << static_cast<int>(sample[4]) << static_cast<int>(sample[5]) << static_cast<int>(sample[6]) << static_cast<int>(sample[7]) << std::endl;
+    for(int i = 32; i < 64; i++)
+      std::cout << std::hex << static_cast<int>(sample[i]);
+    std::cout << std::endl;
     
-    //std::cout << something << std::endl;
+    /*
+    for(int i = 0; i < 32; i++)
+      std::cout << std::hex << sample[i];
+    std::cout << std::endl;
 
-    std::cout << "Hello, world!" << std::endl;
+    for(int i = 32; i < 64; i++)
+      std::cout << std::hex << sample[i];
+    std::cout << std::endl;     
+    */
+
     
     return 0;
 }
