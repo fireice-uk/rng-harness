@@ -7,13 +7,13 @@ public:
   ~prng(){
   }
   
-  inline static prng& inst(){
-    static prng inst;
+  inline static thread_local prng& inst(){
+    static thread_local prng inst;
     return inst;
   }
     
-  inline static const prng& cinst(){
-    static const prng& inst = prng::inst();
+  inline static thread_local const prng& cinst(){
+    static thread_local const prng& inst = prng::inst();
     return inst;
   }
   
