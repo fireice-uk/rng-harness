@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     uint8_t sample[8];
-    int n = 64;
+    int n = 8;
     prng &obj = prng::inst();
     obj.generate_system_random_bytes(&sample[0], n);
     obj.generate_system_random_bytes(&sample[1], n);
