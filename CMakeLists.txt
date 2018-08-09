@@ -3,11 +3,10 @@ project(rngharness)
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Threads REQUIRED)
 
-add_executable(test test.cpp)
-target_link_libraries(test Threads::Threads)
-
 add_executable(rngharness main.cpp)
-
+target_link_libraries(rngharness Threads::Threads)
 install(TARGETS rngharness RUNTIME DESTINATION bin)
