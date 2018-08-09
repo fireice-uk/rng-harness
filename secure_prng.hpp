@@ -21,13 +21,14 @@
 class prng
 {
 public:
-  prng(){
+  prng()
+  {
     #if defined(_WIN32)
-      if(!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT)){
+      if(!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+      {
         std::cerr << "CryptAcquireContext Failed " << std::endl;
         std::abort();
       }
-
     #else
       if((fd = open("/dev/urandom", O_RDONLY | O_NOCTTY | O_CLOEXEC)) < 0)
       {
@@ -37,9 +38,11 @@ public:
     #endif    
   }
   
-  ~prng(){
+  ~prng()
+  {
     #if defined(_WIN32)
-      if(!CryptReleaseContext(prov, 0)){
+      if(!CryptReleaseContext(prov, 0))
+      {
         std::cerr << "CryptReleaseContext" << std::endl;
         std::abort();
       }
@@ -52,13 +55,15 @@ public:
     #endif    
   }
   
-  inline void generate_system_random_bytes(uint8_t* result, size_t n){
+  inline void generate_system_random_bytes(uint8_t* result, size_t n)
+  {
     #if defined(_WIN32)  
-      if(CryptGenRandom(prov, (DWORD)n, result)){
+      if(CryptGenRandom(prov, (DWORD)n, result))
+      {
         std::cerr << "CryptGenRandom Failed " << std::endl;
       }
     #else
-      for(;;)
+      while(true)
       {
         ssize_t res = read(fd, result, n);
         if((size_t)res == n)
@@ -87,12 +92,14 @@ public:
     #endif
   }
     
-  inline static thread_local prng& inst(){
+  inline static thread_local prng& inst()
+  {
     static thread_local prng inst;
     return inst;
   }
     
-  inline static thread_local const prng& cinst(){
+  inline static thread_local const prng& cinst()
+  {
     static thread_local const prng& inst = prng::inst();
     return inst;
   }
