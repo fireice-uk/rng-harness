@@ -51,6 +51,41 @@ public:
       }
     #endif    
   }
+  
+  inline void generate_system_random_bytes(uint8_t* result, size_t n){
+    #if defined(_WIN32)  
+      if(CryptGenRandom(prov, (DWORD)n, result)){
+        std::cerr << "CryptGenRandom Failed " << std::endl;
+      }
+    #else
+      for(;;)
+      {
+        ssize_t res = read(fd, result, n);
+        if((size_t)res == n)
+        {
+          break;
+        }
+        if(res < 0)
+        {
+          if(errno != EINTR)
+          {
+            std::cerr << "EXIT_FAILURE :: read /dev/urandom" << std::endl;
+            std::abort();
+          }
+        }
+        else if(res == 0)
+        {
+          std::cerr << "EXIT_FAILURE :: read /dev/urandom: end of file " << std::endl;
+          std::abort();
+        }
+        else
+        {
+          result += res;
+          n -= (size_t)res;
+        }
+      }    
+    #endif
+  }
     
   inline static thread_local prng& inst(){
     static thread_local prng inst;
