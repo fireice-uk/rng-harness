@@ -1,4 +1,5 @@
-class prng{
+class prng
+{
 public:
   prng(){
   }
