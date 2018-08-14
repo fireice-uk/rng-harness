@@ -1,5 +1,5 @@
 #include <string.h>
-#include "keccak.c"
+#include "keccak.h"
 
 #if defined(_WIN32)
 
@@ -56,20 +56,34 @@ public:
 		#endif    
 	}
 
-	void generate_random(uint8_t* result, size_t n, uint8_t* extra=0)
+	void generate_random(uint8_t* output, size_t size_bytes)
 	{
-		if(n <= 4)
+		if(size_bytes <= 32)
 		{
-			generate_system_random_bytes(result, n);
-			for(int i = 0; i < 4; i++)
-				std::cout << std::hex << static_cast<int>(result[i]);
-			std::cout << std::endl;
+			generate_system_random_bytes(output, size_bytes);
+			return;
 		}
 		else
 		{
-			uint8_t myStaticArray[40];
-
-			// keccak(myStaticArray, 40, , );
+			uint64_t buffer[5];
+			buffer[0] = 0;
+			generate_system_random_bytes(reinterpret_cast<uint8_t*>(buffer+1), sizeof(buffer) - sizeof(uint64_t));
+			
+			while(size_bytes > 200)
+			{
+				buffer[0]++;
+				keccak(reinterpret_cast<uint8_t*>(buffer), sizeof(buffer), output, 200);
+				output += 200;
+				size_bytes -= 200;
+			}
+			
+			if(size_bytes > 0)
+			{
+				uint8_t last[200];
+				buffer[0]++;
+				keccak(reinterpret_cast<uint8_t*>(buffer), sizeof(buffer), last, 200);
+				memcpy(output, last, size_bytes);
+			}
 		}
 	}
 
@@ -110,13 +124,13 @@ public:
 		#endif
 	}
 
-	inline static thread_local prng& inst()
+	inline static prng& inst()
 	{
 		static thread_local prng inst;
 		return inst;
 	}
 
-	inline static thread_local const prng& cinst()
+	inline static const prng& cinst()
 	{
 		static thread_local const prng& inst = prng::inst();
 		return inst;
